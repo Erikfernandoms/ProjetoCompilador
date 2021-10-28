@@ -25,8 +25,6 @@
 #       POW         #       ^
 #       MULT        #       * 
 #       SQRT        #       |
-#       DIRMODULE   #       <|
-#       ESQMODULE   #       |>
 #       IF          #       if
 #       ELSE        #       else
 #       ELIF        #       elif
@@ -81,7 +79,7 @@
 #
 #####################
 
-STR,INT,FLT,BOOLEAN,BOOLEANTRUE,BOOLEANFALSE,SUM,SUB,DIV,POW,MULT,EQUAL,SQRT,DIRMODULE,ESQMODULE,IF,ELSE,ELIF,WHILE,FOR,BREAK,FUNCTION,CLASS,COMMENT,IDENTIFIER,INTEGER,FLOAT,STRING,DIRPARENT,ESQPARENT,TWOPOINTS,ENDEXPRESSION,ESQMAIOR,DIRMAIOR,ESQME,DIRME,DIF,ESQKEY,DIRKEY,EOF = ('string','int','float','boolean','true','false','+','-','/','^','*','=','|','<|','|>','if','else','elif','while','for','brk','func','class',"^'[A-Za-z0-9 ,.&]+'",'[A-Za-z]+$','^-?\d*?\d+$','(?:\.|,|[0-9])*','^"[A-Za-z0-9 ,._]+"','(',')',':',';','<','>','<=','>=','!=','{','}','EOF')#IDENTIFIER,INTEGER,FLOAT, REGEX
+STR,INT,FLT,BOOLEAN,BOOLEANTRUE,BOOLEANFALSE,SUM,SUB,DIV,POW,MULT,EQUAL,SQRT,IF,ELSE,ELIF,WHILE,FOR,BREAK,FUNCTION,CLASS,COMMENT,IDENTIFIER,INTEGER,FLOAT,STRING,DIRPARENT,ESQPARENT,TWOPOINTS,ENDEXPRESSION,ESQMAIOR,DIRMAIOR,ESQME,DIRME,DIF,ESQKEY,DIRKEY,EQUALCOMP,AND,OR,NOT,EOF = ('string','int','float','boolean','true','false','+','-','/','^','*','=','|','if','else','elif','while','for','brk','func','class',"^'[A-Za-z0-9 ,.&]+'",'[A-Za-z]+$','^-?\d*?\d+$','(?:\.|,|[0-9])*','^"[A-Za-z0-9 ,._]+"','(',')',':',';','<','>','<=','>=','!=','{','}','==','and','or','not','EOF')#IDENTIFIER,INTEGER,FLOAT, REGEX
 import re
 
 class Token(object):
@@ -174,12 +172,6 @@ class Lexer:
             elif caracters[self.pos] == "!=":                
                 self.advance()
                 return(Token(DIF, "!="))
-            elif caracters[self.pos] == "<|":               
-                self.advance()
-                return(Token(ESQMODULE, "<|"))
-            elif caracters[self.pos] == "|>":                
-                self.advance()
-                return(Token(DIRMODULE, "|>"))
             elif caracters[self.pos] == "(":               
                 self.advance()
                 return(Token(ESQPARENT, "("))
@@ -216,6 +208,18 @@ class Lexer:
             elif caracters[self.pos] == "func":            
                 self.advance()
                 return(Token(FUNCTION, "function"))
+            elif caracters[self.pos] == "==":            
+                self.advance()
+                return(Token(EQUALCOMP, "=="))
+            elif caracters[self.pos] == "and":            
+                self.advance()
+                return(Token(AND, "and"))
+            elif caracters[self.pos] == "or":            
+                self.advance()
+                return(Token(OR, "or"))
+            elif caracters[self.pos] == "not":            
+                self.advance()
+                return(Token(NOT, "not"))
             elif caracters[self.pos] == "class":            
                 self.advance()
                 return(Token(CLASS, "class"))
