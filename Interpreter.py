@@ -16,8 +16,41 @@ class Interpreter(object):
             self.error()   
          
     def Op(self):
-        
-        
+        result= ""
+        while self.current_token.type in (Tokens.IDENTIFIER, Tokens.SUM, Tokens.SUB, Tokens.MULT, Tokens.DIV,Tokens.POW,Tokens.SQRT,Tokens.ESQMODULE,Tokens.DIRMODULE, Tokens.ENDEXPRESSION):
+            token = self.current_token
+            if token.type == Tokens.IDENTIFIER:
+                self.eat(Tokens.IDENTIFIER)
+                result += " " + token.value
+            elif token.type == Tokens.SUM:
+                self.eat(Tokens.SUM)
+                result += " " + token.value
+            elif token.type == Tokens.SUB:
+                self.eat(Tokens.SUB)
+                result += " " + token.value
+            elif token.type == Tokens.MULT:
+                self.eat(Tokens.MULT)
+                result += " " + token.value
+            elif token.type == Tokens.DIV:
+                self.eat(Tokens.DIV)
+                result += " " + token.value
+            elif token.type == Tokens.POW:
+                self.eat(Tokens.POW)
+                result += " " + token.value
+            elif token.type == Tokens.SQRT:
+                self.eat(Tokens.SQRT)
+                result += " " + token.value
+            elif token.type == Tokens.ESQMODULE:
+                self.eat(Tokens.ESQMODULE)
+                result += " " + token.value
+            elif token.type == Tokens.DIRMODULE:
+                self.eat(Tokens.DIRMODULE)
+                result += " " + token.value
+            elif token.type == Tokens.ENDEXPRESSION:
+                self.eat(Tokens.ENDEXPRESSION)
+                result += " " + token.value
+        return result
+
     def VarAtrib(self):
         result = self.atributionTypes()
         while self.current_token.type in (Tokens.IDENTIFIER, Tokens.EQUAL, Tokens.ENDEXPRESSION):
