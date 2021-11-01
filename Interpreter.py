@@ -1,3 +1,5 @@
+import re
+from typing import List
 import Tokens
 
 class Interpreter(object):
@@ -16,7 +18,7 @@ class Interpreter(object):
             self.error() 
 
     def Conditional(self):
-        result = self.Statement()
+        result = self.ReadStatement()
         while self.current_token.type in (Tokens.IF, Tokens.ESQPARENT, Tokens.DIRPARENT, Tokens.TWOPOINTS,Tokens.ELIF, Tokens.ELSE, Tokens.ENDEXPRESSION):
             token = self.current_token
             if token.type == Tokens.IF:
@@ -24,13 +26,13 @@ class Interpreter(object):
                 result += " " + token.value 
             elif token.type == Tokens.ESQPARENT:
                 self.eat(Tokens.ESQPARENT)
-                result += " " + token.value + " " + self.Statement()
+                result += " " + token.value + " " + self.ReadStatement()
             elif token.type == Tokens.DIRPARENT:
                 self.eat(Tokens.DIRPARENT)
                 result += " " + token.value
             elif token.type == Tokens.TWOPOINTS:
                 self.eat(Tokens.TWOPOINTS)
-                result += " " + token.value + " " + self.Statement()
+                result += " " + token.value + " " + self.ReadStatement()
             elif token.type == Tokens.ELIF:
                 self.eat(Tokens.ELIF)
                 result += " " + token.value
@@ -42,14 +44,17 @@ class Interpreter(object):
                 result += " " + token.value
         return result
 
-    def Statement(self):
-        self.types()
-        self.atributionTypes()
-        self.Op()
-        self.VarDecl()
-        self.VarAtrib()    
-        self.Operators()
-        
+    def ReadStatement(self):
+        lista = self.Statement()
+        result = ""
+        for i in range(len(lista)):
+            if (lista[i] != ''):
+                result += lista[i]
+        return result
+    
+    def Statement(self) -> list:
+        return self.VarDecl(), self.VarAtrib(), self.atributionTypes(), self.types(), self.RelOp(), self.Op(), self.Operators()
+
     def Operators(self):
         result = ""
         while self.current_token.type in (Tokens.NOT, Tokens.AND, Tokens.OR):
@@ -66,7 +71,7 @@ class Interpreter(object):
         return result
 
     def RelOp(self):
-        result= self.atributionTypes() 
+        result = self.atributionTypes() 
         while self.current_token.type in (Tokens.IDENTIFIER, Tokens.ENDEXPRESSION,Tokens.ESQMAIOR, Tokens.DIRMAIOR, Tokens.ESQME, Tokens.DIRME, Tokens.DIF, Tokens.EQUALCOMP):
             token = self.current_token
             if token.type == Tokens.IDENTIFIER:
@@ -93,9 +98,7 @@ class Interpreter(object):
             elif token.type == Tokens.EQUAL:
                 self.eat(Tokens.EQUALCOMP)
                 result += " " + token.value + " " + self.atributionTypes()
-            
         return result
-
 
     def Op(self):
         result= self.atributionTypes() 
@@ -127,7 +130,6 @@ class Interpreter(object):
                 result += " " + token.value + " " + self.atributionTypes()
         return result
         
-
     def VarAtrib(self):
         result = self.atributionTypes()
         while self.current_token.type in (Tokens.IDENTIFIER, Tokens.EQUAL, Tokens.ENDEXPRESSION):
@@ -174,8 +176,6 @@ class Interpreter(object):
                 result = token.value
         return result
 
-        
-
     def atributionTypes(self):
         result = ""
         while self.current_token.type in (Tokens.STRING, Tokens.INTEGER, Tokens.FLOAT, Tokens.BOOLEANTRUE, Tokens.BOOLEANFALSE):
@@ -205,7 +205,7 @@ def open_arq(arq):
 def main():
     lexer = Tokens.Lexer(open_arq("teste.txt"))
     interpreter = Interpreter(lexer)
-    result = interpreter.Operators()
+    result = interpreter.Conditional()
     print(result)
     
 if __name__ == "__main__":
