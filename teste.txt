@@ -1,1 +1,5 @@
-if ( or ) : int a ; ; elif ( and ) : a = "a" ; else : a > b ;
+if ( or ) : 
+int a ; ; 
+elif ( and ) : 
+a = "a" ; 
+else : a > b ;

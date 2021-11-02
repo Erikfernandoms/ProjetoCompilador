@@ -227,11 +227,7 @@ class Lexer:
                 self.advance()
                 return(Token(COMMENT, "comment"))
             elif caracters[self.pos] == '':  
-                if self.pos > len(caracters) - 1:
-                    self.current_char = None
-                else:
-                    self.current_char = caracters[self.pos]
-                continue
+                self.advance()
             elif re.match(r'[A-Za-z]+$', caracters[self.pos]):     
                 self.advance()
                 return(Token(IDENTIFIER, "identifier"))
