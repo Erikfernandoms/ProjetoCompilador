@@ -1,6 +1,6 @@
 import re
 from typing import List
-import Tokens.Tokens
+import Tokens.Tokens, Tree.Num, Tree.BinOp, Tree.BoolOp, Tree.Identifier
 
 class Parser(object):
 
@@ -16,6 +16,9 @@ class Parser(object):
             self.current_token = self.lexer.getToken()
         else:
             self.error() 
+
+    def parse(self):
+        return self.Conditional()
 
     def Conditional(self):
         result = self.ReadStatement()
@@ -49,7 +52,7 @@ class Parser(object):
         result = ""
         for i in range(len(lista)):
             if (lista[i] != ''):
-                result += lista[i]
+                result = lista[i]
         return result
     
     def Statement(self) -> list:
@@ -177,23 +180,23 @@ class Parser(object):
         return result
 
     def atributionTypes(self):
-        result = ""
+        node = ""
         while self.current_token.type in (Tokens.Tokens.STRING, Tokens.Tokens.INTEGER, Tokens.Tokens.FLOAT, Tokens.Tokens.BOOLEANTRUE, Tokens.Tokens.BOOLEANFALSE):
             token = self.current_token
             if token.type == Tokens.Tokens.STRING:
                 self.eat(Tokens.Tokens.STRING)
-                result = token.value
+                node = ""
             elif token.type == Tokens.Tokens.INTEGER:
                 self.eat(Tokens.Tokens.INTEGER)
-                result = token.value
+                node = Tree.Num.Num(token)
             elif token.type == Tokens.Tokens.FLOAT:
                 self.eat(Tokens.Tokens.FLOAT)
-                result = token.value
+                node = Tree.Num.Num(token)
             elif token.type == Tokens.Tokens.BOOLEANTRUE:
                 self.eat(Tokens.Tokens.BOOLEANTRUE)
-                result = token.value
+                node = Tree.BoolOp.BoolOp(token)
             elif token.type == Tokens.Tokens.BOOLEANFALSE:
                 self.eat(Tokens.Tokens.BOOLEANFALSE)
-                result = token.value
-        return result
+                node = Tree.BoolOp.BoolOp(token)
+        return node
 

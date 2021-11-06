@@ -7,8 +7,9 @@ def open_arq(arq):
 
 def main():
     lexer = AnSint.Lexer.Lexer(open_arq("teste.txt"))
-    interpreter = AnSint.Parser.Parser(lexer)
-    result = interpreter.Conditional()
+    parser = AnSint.Parser.Parser(lexer)
+    interpreter = Interpreter.Interpreter.Interpreter(parser).interpreter()
+    result = interpreter
     print(result)
     
 if __name__ == "__main__":
