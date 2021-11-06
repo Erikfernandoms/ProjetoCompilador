@@ -1,5 +1,3 @@
-
-
 class BinOp():
     def __init__(self, left, op, right):
         self.left = left
