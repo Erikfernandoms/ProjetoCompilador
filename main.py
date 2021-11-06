@@ -1,4 +1,7 @@
-import Interpreter.Interpreter, AnSint.Parser, AnSint.Lexer
+from Interpreter.Interpreter import Interpreter
+from AnSint.Parser import Parser
+from AnSint.Lexer import Lexer
+
 
 def open_arq(arq):
         file = open(arq)
@@ -6,9 +9,9 @@ def open_arq(arq):
         return word
 
 def main():
-    lexer = AnSint.Lexer.Lexer(open_arq("teste.txt"))
-    parser = AnSint.Parser.Parser(lexer)
-    interpreter = Interpreter.Interpreter.Interpreter(parser).interpreter()
+    lexer = Lexer(open_arq("teste.txt"))
+    parser = Parser(lexer)
+    interpreter = Interpreter(parser).interpreter()
     result = interpreter
     print(result)
     
