@@ -4,7 +4,6 @@ from Tokens.Tokens import Token
 STR,INT,FLT,BOOLEAN,BOOLEANTRUE,BOOLEANFALSE,SUM,SUB,DIV,POW,MULT,EQUAL,SQRT,IF,ELSE,ELIF,WHILE,FOR,BREAK,FUNCTION,CLASS,COMMENT,IDENTIFIER,INTEGER,FLOAT,STRING,DIRPARENT,ESQPARENT,TWOPOINTS,ENDEXPRESSION,ESQMAIOR,DIRMAIOR,ESQME,DIRME,DIF,ESQKEY,DIRKEY,EQUALCOMP,AND,OR,NOT,EOF = ('string','int','float','boolean','true','false','+','-','/','^','*','=','|','if','else','elif','while','for','brk','func','class',"^'[A-Za-z0-9 ,.&]+'",'[A-Za-z]+$','^-?\d*?\d+$','(?:\.|,|[0-9])*','^"[A-Za-z0-9 ,._]+"','(',')',':',';','<','>','<=','>=','!=','{','}','==','and','or','not','EOF')#IDENTIFIER,INTEGER,FLOAT, REGEX
 
 class Lexer(object):
-
     def __init__(self, elements):
         self.pos = 0
         self.elements = elements

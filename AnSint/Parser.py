@@ -1,9 +1,17 @@
 import re
 from typing import List
 import Tokens.Tokens
+from Tree.Conditionals import Conditionals
 from Tree.Num import Num
 from Tree.BinOp import BinOp
 from Tree.BoolOp import BoolOp
+from Tree.Operators import Operators
+from Tree.RelOp import RelOp
+from Tree.Statement import Statement
+from Tree.Str import Str
+from Tree.ConstantTypes import ConstantTypes
+from Tree.VarAtrib import VarAtrib
+from Tree.VarDecl import VarDecl
 
 
 class Parser(object):
@@ -25,163 +33,156 @@ class Parser(object):
         return self.Conditional()
 
     def Conditional(self):
-        result = self.ReadStatement()
+        node = self.Statement()
         while self.current_token.type in (Tokens.Tokens.IF, Tokens.Tokens.ESQPARENT, Tokens.Tokens.DIRPARENT, Tokens.Tokens.TWOPOINTS,Tokens.Tokens.ELIF, Tokens.Tokens.ELSE, Tokens.Tokens.ENDEXPRESSION):
             token = self.current_token
             if token.type == Tokens.Tokens.IF:
                 self.eat(Tokens.Tokens.IF)
-                result += " " + token.value 
+                node = Conditionals(token, self.Statement())
             elif token.type == Tokens.Tokens.ESQPARENT:
                 self.eat(Tokens.Tokens.ESQPARENT)
-                result += " " + token.value + " " + self.ReadStatement()
+                node = Conditionals(token, self.Statement())
             elif token.type == Tokens.Tokens.DIRPARENT:
                 self.eat(Tokens.Tokens.DIRPARENT)
-                result += " " + token.value
+                node = Conditionals(token, self.Statement())
             elif token.type == Tokens.Tokens.TWOPOINTS:
                 self.eat(Tokens.Tokens.TWOPOINTS)
-                result += " " + token.value + " " + self.ReadStatement()
+                node = Conditionals(token, self.Statement())
             elif token.type == Tokens.Tokens.ELIF:
                 self.eat(Tokens.Tokens.ELIF)
-                result += " " + token.value
+                node = Conditionals(token, self.Statement())
             elif token.type == Tokens.Tokens.ELSE:
                 self.eat(Tokens.Tokens.ELSE)
-                result += " " + token.value
+                node = Conditionals(token, self.Statement())
             elif token.type == Tokens.Tokens.ENDEXPRESSION:
                 self.eat(Tokens.Tokens.ENDEXPRESSION)
-                result += " " + token.value
-        return result
-
-    def ReadStatement(self):
-        lista = self.Statement()
-        result = ""
-        for i in range(len(lista)):
-            if (lista[i] != ''):
-                result = lista[i]
-        return result
+                node = Conditionals(token, self.Statement())
+        return node
     
     def Statement(self) -> list:
-        return self.VarDecl(), self.VarAtrib(), self.atributionTypes(), self.types(), self.RelOp(), self.Op(), self.Operators()
-
+        node = Statement(self.VarDecl(), self.VarAtrib(), self.atributionTypes(), self.types(), self.RelOp(), self.Op(), self.Operators())
+        return node
+      
     def Operators(self):
-        result = ""
+        node = ""
         while self.current_token.type in (Tokens.Tokens.NOT, Tokens.Tokens.AND, Tokens.Tokens.OR):
             token = self.current_token
             if token.type == Tokens.Tokens.NOT:
                 self.eat(Tokens.Tokens.NOT)
-                result += " " + token.value 
+                node = Operators(token)
             elif token.type == Tokens.Tokens.AND:
                 self.eat(Tokens.Tokens.AND)
-                result += " " + token.value
+                node = Operators(token)
             elif token.type == Tokens.Tokens.OR:
                 self.eat(Tokens.Tokens.OR) 
-                result += " " + token.value 
-        return result
+                node = Operators(token)
+        return node
 
     def RelOp(self):
-        result = self.atributionTypes() 
+        node = self.atributionTypes() 
         while self.current_token.type in (Tokens.Tokens.IDENTIFIER, Tokens.Tokens.ENDEXPRESSION,Tokens.Tokens.ESQMAIOR, Tokens.Tokens.DIRMAIOR, Tokens.Tokens.ESQME, Tokens.Tokens.DIRME, Tokens.Tokens.DIF, Tokens.Tokens.EQUALCOMP):
             token = self.current_token
             if token.type == Tokens.Tokens.IDENTIFIER:
                 self.eat(Tokens.Tokens.IDENTIFIER)
-                result += " " + token.value 
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.ENDEXPRESSION:
                 self.eat(Tokens.Tokens.ENDEXPRESSION)
-                result += " " + token.value
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.ESQMAIOR:
                 self.eat(Tokens.Tokens.ESQMAIOR) 
-                result += " " + token.value + " " + self.atributionTypes()
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.DIRMAIOR:
                 self.eat(Tokens.Tokens.DIRMAIOR)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.ESQME:
                 self.eat(Tokens.Tokens.ESQME)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.DIRME:
                 self.eat(Tokens.Tokens.DIRME)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.DIF:
                 self.eat(Tokens.Tokens.DIF)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.EQUAL:
                 self.eat(Tokens.Tokens.EQUALCOMP)
-                result += " " + token.value + " " + self.atributionTypes()
-        return result
+                node = RelOp(left=node, op=token, right=self.atributionTypes())
+        return node
 
     def Op(self):
-        result= self.atributionTypes() 
+        node = self.atributionTypes() 
         while self.current_token.type in (Tokens.Tokens.IDENTIFIER, Tokens.Tokens.ENDEXPRESSION,Tokens.Tokens.SUM, Tokens.Tokens.SUB, Tokens.Tokens.MULT, Tokens.Tokens.DIV, Tokens.Tokens.POW, Tokens.Tokens.SQRT):
             token = self.current_token
             if token.type == Tokens.Tokens.IDENTIFIER:
                 self.eat(Tokens.Tokens.IDENTIFIER)
-                result += " " + token.value 
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.ENDEXPRESSION:
                 self.eat(Tokens.Tokens.ENDEXPRESSION)
-                result += " " + token.value
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.SUM:
                 self.eat(Tokens.Tokens.SUM) 
-                result += " " + token.value + " " + self.atributionTypes()
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.SUB:
                 self.eat(Tokens.Tokens.SUB)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.MULT:
                 self.eat(Tokens.Tokens.MULT)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.DIV:
                 self.eat(Tokens.Tokens.DIV)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.POW:
                 self.eat(Tokens.Tokens.POW)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.SQRT:
                 self.eat(Tokens.Tokens.SQRT)
-                result += " " + token.value + " " + self.atributionTypes()
-        return result
+                node = BinOp(left=node, op=token, right=self.atributionTypes())
+        return node
         
     def VarAtrib(self):
-        result = self.atributionTypes()
+        node = self.atributionTypes()
         while self.current_token.type in (Tokens.Tokens.IDENTIFIER, Tokens.Tokens.EQUAL, Tokens.Tokens.ENDEXPRESSION):
             token = self.current_token
             if token.type == Tokens.Tokens.IDENTIFIER:
                 self.eat(Tokens.Tokens.IDENTIFIER)
-                result += " " + token.value
+                node = VarAtrib(left=node, atribuition=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.EQUAL:
                 self.eat(Tokens.Tokens.EQUAL)
-                result += " " + token.value + " " + self.atributionTypes()
+                node = VarAtrib(left=node, atribuition=token, right=self.atributionTypes())
             elif token.type == Tokens.Tokens.ENDEXPRESSION:
                 self.eat(Tokens.Tokens.ENDEXPRESSION)
-                result += " " + token.value
-        return result
+                node = VarAtrib(left=node, atribuition=token, right=self.atributionTypes())
+        return node
 
     def VarDecl(self):
-        result = self.types()
+        node = self.types()
         while self.current_token.type in (Tokens.Tokens.IDENTIFIER, Tokens.Tokens.ENDEXPRESSION):
             token = self.current_token
             if token.type == Tokens.Tokens.IDENTIFIER:
                 self.eat(Tokens.Tokens.IDENTIFIER)
-                result += " " + token.value
+                node = VarDecl(self.types(),token)
             elif token.type == Tokens.Tokens.ENDEXPRESSION:
                 self.eat(Tokens.Tokens.ENDEXPRESSION)
-                result += " " + token.value
+                node = VarDecl(self.types(),token)
             
-        return result
+        return node
 
     def types(self):
-        result = ""
+        node = ""
         while self.current_token.type in (Tokens.Tokens.STR, Tokens.Tokens.INT, Tokens.Tokens.FLT, Tokens.Tokens.BOOLEAN):
             token = self.current_token
             if token.type == Tokens.Tokens.STR:
                 self.eat(Tokens.Tokens.STR)
-                result = token.value
+                node = ConstantTypes(token)
             elif token.type == Tokens.Tokens.INT:
                 self.eat(Tokens.Tokens.INT)
-                result = token.value
+                node = ConstantTypes(token)
             elif token.type == Tokens.Tokens.FLT:
                 self.eat(Tokens.Tokens.FLT)
-                result = token.value
+                node = ConstantTypes(token)
             elif token.type == Tokens.Tokens.BOOLEAN:
                 self.eat(Tokens.Tokens.BOOLEAN)
-                result = token.value
-        return result
+                node = ConstantTypes(token)
+        return node
 
     def atributionTypes(self):
         node = ""
@@ -189,7 +190,7 @@ class Parser(object):
             token = self.current_token
             if token.type == Tokens.Tokens.STRING:
                 self.eat(Tokens.Tokens.STRING)
-                node = ""
+                node = Str(node)
             elif token.type == Tokens.Tokens.INTEGER:
                 self.eat(Tokens.Tokens.INTEGER)
                 node = Num(token)
