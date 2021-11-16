@@ -190,7 +190,8 @@ class Parser(object):
             token = self.current_token
             if token.type == Tokens.Tokens.STRING:
                 self.eat(Tokens.Tokens.STRING)
-                node = Str(node)
+                node = Str(token)
+                
             elif token.type == Tokens.Tokens.INTEGER:
                 self.eat(Tokens.Tokens.INTEGER)
                 node = Num(token)
